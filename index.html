@@ -4,13 +4,12 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
 		<title>Title Goes Here</title>
 		<script type="text/javascript">
+			//global variable for indexedDB support
+			var idbSupported = false;
 			//check for indexedDB support
 			document.addEventListener("DOMContentLoaded", function(){
 				if("indexedDB" in window) {
-					console.log("IndexedDB is supported");
-					//do something else, like setting a flag or something like that
-				} else {
-					console.log("IndexedDB is unsupported");
+					idbSupported = true;
 				}
 			},false);
 		</script>
