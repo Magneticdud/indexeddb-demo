@@ -3,6 +3,16 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
 		<title>Title Goes Here</title>
+		<script type="text/javascript">
+			//check for indexedDB support
+			document.addEventListener("DOMContentLoaded", function(){
+				if("indexedDB" in window) {
+					console.log("IndexedDB is supported");
+				} else {
+					console.log("IndexedDB is unsupported");
+				}
+			},false);
+		</script>
 	</head>
 	<body>
 		<p>This is an empty page</p>
