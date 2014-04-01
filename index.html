@@ -14,9 +14,15 @@
 				}
 				if(idbSupported) {
 					// parameter1: db name, 2: version number
-					var openRequest = indexedDB.open("test",1);
+					// need to increase the version number each time there's a need to update the db structure
+					var openRequest = indexedDB.open("test",2);
 					openRequest.onupgradeneeded = function(e) {
 						console.log("Upgrading...");
+						var thisDB = e.target.result;
+						//if it doesn't contain the key, it creates a new one
+						if(!thisDB.objectStoreNames.contains("objectstore1")) {
+							thisDB.createObjectStore("objectstore1");
+						}
 					}
 					openRequest.onsuccess = function(e) {
 						console.log("Success!");
