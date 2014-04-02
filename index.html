@@ -83,29 +83,19 @@
 			}
 			
 			function getPerson(e) {
-				var key = document.getElementById("key").value;
-				//if invalid key it exits
-				if(key === "" || isNaN(key)) return;
-
-				var transaction = db.transaction(["objectstore1"],"readonly");
-				var store = transaction.objectStore("objectstore1");
-			 
-				var request = store.get(Number(key));
-			 
-				request.onsuccess = function(e) {
-			 
-					var result = e.target.result;
-					console.dir(result);
-					if(result) {
-						var s = "<h2>Key "+key+"</h2><p>";
-						for(var field in result) {
-							s+= field+"="+result[field]+"<br/>";
+				var s = "";
+				db.transaction(["objectstore1"], "readonly").objectStore("objectstore1").openCursor().onsuccess = function(e) {
+					var cursor = e.target.result;
+					if(cursor) {
+						s += "<h2>Key "+cursor.key+"</h2><p>";
+						for(var field in cursor.value) {
+							s+= field+"="+cursor.value[field]+"<br/>";
 						}
-						document.getElementById("status").innerHTML = s;
-					} else {
-						document.getElementById("status").innerHTML = "<h2>No match</h2>";
-					}  
-				}  
+						s+="</p>";
+						cursor.continue();
+					}
+					document.querySelector("#status").innerHTML = s;
+				}
 			}
 		</script>
 	</head>
@@ -115,10 +105,9 @@
 		<input type="email" id="email" placeholder="Email"><br/>
 		<button id="addButton" disabled=true>Add Name</button>
 		<br/>
-		<br/>	
-		<input type="number" id="key" placeholder="Key"><br/>
-		<button id="getButton" disabled=true>Search key</button><br/>
-		<div id="status"><h3>No key selected</h3></div>
+		<br/>
+		<button id="getButton" disabled=true>Get Everyone</button><br/>
+		<div id="status"></div>
 	</body>
 </html>
 
