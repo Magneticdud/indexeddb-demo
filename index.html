@@ -105,23 +105,38 @@
 			
 			function getName(e) {
 				var name = document.querySelector("#nameSearch").value;
-				if(name === "" ) return;
+				var endname = document.querySelector("#nameSearchEnd").value;
+
+				if(name == "" && endname == "") return;
+
 				var transaction = db.transaction(["objectstore1"],"readonly");
 				var store = transaction.objectStore("objectstore1");
 				var index = store.index("name");
-				var request = index.get(name);
-				request.onsuccess = function(e) {
-					var result = e.target.result;
-					if(result) {
-						var s = "<h2>Name "+name+"</h2><p>";
-						for(var field in result) {
-							s+= field+"="+result[field]+"<br/>";
-						}
-						document.querySelector("#status2").innerHTML = s;
-					} else {
-						document.querySelector("#status2").innerHTML = "<h2>No match</h2>";
-					}	
+
+				//Make the range depending on what type we are doing
+				var range;
+				if(name != "" && endname != "") {
+					range = IDBKeyRange.bound(name, endname);
+				} else if(name == "") {
+					range = IDBKeyRange.upperBound(endname);
+				} else {
+					range = IDBKeyRange.lowerBound(name);
 				}
+
+				var s = "";
+
+				index.openCursor(range).onsuccess = function(e) {
+					var cursor = e.target.result;
+					if(cursor) {
+						s += "<h2>Key "+cursor.key+"</h2><p>";
+						for(var field in cursor.value) {
+							s+= field+"="+cursor.value[field]+"<br/>";
+						}
+						s+="</p>";
+						cursor.continue();
+					}
+					document.querySelector("#status2").innerHTML = s;
+				}				
 			}
 		</script>
 	</head>
@@ -135,7 +150,8 @@
 		<button id="getButton" disabled=true>Get Everyone</button><br/>
 		<div id="status"></div>
 		<p/>
-		<input type="text" id="nameSearch" placeholder="Name"><br/>
+		Starting with: <input type="text" id="nameSearch" placeholder="Name"><br/>
+		Ending with: <input type="text" id="nameSearchEnd" placeholder="Name"><br/>
 		<button id="getByname" disabled=true">Get By Name</button>
 		<p/>
 		<div id="status2"></div>
