@@ -7,12 +7,15 @@
 			//global variable for indexedDB support
 			var idbSupported = false;
 			var db;
-			//check for indexedDB support
+			//check for indexedDB 
+			//if supported, indexedDBOk return true
+			function indexedDBOk() {
+				return "indexedDB" in window;
+			}
 			document.addEventListener("DOMContentLoaded", function(){
-				if("indexedDB" in window) {
-					idbSupported = true;
-				}
-				if(idbSupported) {
+				//if no support, exits from this function
+				if(!indexedDBOk) return;
+
 					// parameter1: db name, 2: version number
 					// need to increase the version number each time there's a need to update the db structure
 					var openRequest = indexedDB.open("test",2);
@@ -35,7 +38,7 @@
 						console.log("Error");
 						console.dir(e);
 					}
-				}
+					
 			},false);
 			
 			function addPerson(e) {
