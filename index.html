@@ -18,7 +18,8 @@
 
 				// parameter1: db name, 2: version number
 				// need to increase the version number each time there's a need to update the db structure
-				var openRequest = indexedDB.open("test",1);
+				// db version cannot be lower than the recorded one
+				var openRequest = indexedDB.open("test",3);
 				openRequest.onupgradeneeded = function(e) {
 					console.log("Upgrading...");
 					var thisDB = e.target.result;
@@ -38,6 +39,9 @@
 					//Listen for add clicks
 					document.getElementById("addButton").addEventListener("click", addPerson, false);
 					document.getElementById("addButton").disabled=false;
+					//Listen for get clicks
+					document.getElementById("getButton").addEventListener("click", getPerson, false);
+					document.getElementById("getButton").disabled=false;
 				}
 				openRequest.onerror = function(e) {
 					console.log("Error");
@@ -77,6 +81,32 @@
 					console.log("Element added");
 				}
 			}
+			
+			function getPerson(e) {
+				var key = document.getElementById("key").value;
+				//if invalid key it exits
+				if(key === "" || isNaN(key)) return;
+
+				var transaction = db.transaction(["objectstore1"],"readonly");
+				var store = transaction.objectStore("objectstore1");
+			 
+				var request = store.get(Number(key));
+			 
+				request.onsuccess = function(e) {
+			 
+					var result = e.target.result;
+					console.dir(result);
+					if(result) {
+						var s = "&lt;h2>Key "+key+"&lt;/h2>&lt;p>";
+						for(var field in result) {
+							s+= field+"="+result[field]+"&lt;br/>";
+						}
+						document.getElementById("status").innerHTML = s;
+					} else {
+						document.getElementById("status").innerHTML = "&lt;h2>No match&lt;/h2>";
+					}  
+				}  
+			}
 		</script>
 	</head>
 	<body>
@@ -84,6 +114,11 @@
 		<input type="text" id="name" placeholder="Name"><br/>
 		<input type="email" id="email" placeholder="Email"><br/>
 		<button id="addButton" disabled=true>Add Name</button>
+		<br/>
+		<br/>	
+		<input type="number" id="key" placeholder="Key"><br/>
+		<button id="getButton" disabled=true>Search key</button><br/>
+		<div id="status"><h3>No key selected</h3></div>
 	</body>
 </html>
 
