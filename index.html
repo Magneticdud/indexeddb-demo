@@ -97,13 +97,13 @@
 					var result = e.target.result;
 					console.dir(result);
 					if(result) {
-						var s = "&lt;h2>Key "+key+"&lt;/h2>&lt;p>";
+						var s = "<h2>Key "+key+"</h2><p>";
 						for(var field in result) {
-							s+= field+"="+result[field]+"&lt;br/>";
+							s+= field+"="+result[field]+"<br/>";
 						}
 						document.getElementById("status").innerHTML = s;
 					} else {
-						document.getElementById("status").innerHTML = "&lt;h2>No match&lt;/h2>";
+						document.getElementById("status").innerHTML = "<h2>No match</h2>";
 					}  
 				}  
 			}
